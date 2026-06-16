@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Integrado - Casa Civil</title>
+  
+  <!-- Favicon da Prefeitura -->
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/3/30/Bras%C3%A3o_de_Ol%C3%ADmpia%2C_SP.jpg" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            navy: '#003366',
+            gold: '#ffb800'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Estilos base e Fontes -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    body { 
+      background-color: #f8fafc; /* slate-50 */
+      color: #1e293b; /* slate-800 */ 
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    .animate-fadeInFast {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
+
+  <!-- Import Maps para React e Lucide Icons -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.300.0?deps=react@18.2.0"
+      }
+    }
+  </script>
+
+  <!-- Babel para transpilar JSX no navegador -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- CÓDIGO FONTE PRINCIPAL -->
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect } from "react";
+    import { createRoot } from "react-dom/client";
+    import { 
+      LayoutDashboard, AlertCircle, RefreshCw, BarChart3, 
+      ChevronLeft, ArrowRight, X 
+    } from "lucide-react";
+
+    function Toast({ message, onClose }) {
+      if (!message) return null;
+      return (
+        <div className="fixed bottom-6 right-6 bg-slate-900 border border-slate-700 shadow-2xl rounded-lg p-4 z-[60] flex items-start max-w-sm animate-fadeInFast">
+          <AlertCircle size={20} className="text-gold mr-3 mt-0.5 flex-shrink-0" />
+          <div className="text-white text-sm font-medium">{message}</div>
+          <button onClick={onClose} className="ml-4 text-slate-400 hover:text-white transition-colors cursor-pointer">
+            <X size={16} />
+          </button>
+        </div>
+      );
+    }
+
+    function Header() {
+      return (
+        <header className="bg-navy border-b border-navy h-24 flex items-center justify-between px-4 sm:px-6 lg:px-10 z-30 flex-shrink-0 shadow-sm relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold to-white"></div>
+          
+          <div className="flex flex-col justify-center flex-1">
+            <h1 className="text-sm sm:text-lg md:text-xl font-black text-white tracking-tight leading-none mb-1 uppercase">
+              Painel Integrado
+            </h1>
+            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest leading-none hidden sm:block">
+              Secretaria Municipal da Casa Civil
+            </p>
+            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest leading-none sm:hidden">
+              Casa Civil
+            </p>
+          </div>
+
+          <div className="flex-shrink-0 flex items-center justify-center mx-2 sm:mx-4">
+            <div className="h-16 sm:h-20 bg-white rounded-lg shadow-sm border border-slate-100 px-3 py-1.5 flex items-center justify-center overflow-hidden">
+              <img src="https://e-licita.olimpia.sp.gov.br:8096/img/logo.png" alt="Brasão de Olímpia" className="h-full w-auto object-contain object-center" />
+            </div>
+          </div>
+
+          <div className="flex flex-1 justify-end">
+            <span className="bg-white/10 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest border border-white/20 shadow-sm hidden sm:block">
+              Ano 2026
+            </span>
+          </div>
+        </header>
+      );
+    }
+
+    function CategoryCard({ category, onClick }) {
+      const IconComponent = category.icon || LayoutDashboard;
+      return (
+        <div 
+          onClick={onClick}
+          className="block bg-navy rounded-2xl shadow-md hover:shadow-2xl border border-navy hover:border-gold p-6 flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02] relative overflow-hidden group h-48 cursor-pointer"
+        >
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 rounded-full opacity-0 blur-3xl transition-all duration-700 group-hover:opacity-30 group-hover:scale-150 bg-gold"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-500 bg-transparent group-hover:bg-gold"></div>
+
+          <div className="flex justify-between items-start mb-4 relative z-10">
+            <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 group-hover:border-gold/50 transition-colors shadow-inner">
+              <IconComponent size={32} className="text-slate-300 group-hover:text-gold transition-colors" strokeWidth={1.5} />
+            </div>
+          </div>
+
+          <div className="mt-auto relative z-10 flex justify-between items-end">
+            <h3 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight group-hover:text-gold transition-colors line-clamp-2 max-w-[70%]">
+              {category.label}
+            </h3>
+            <span className="transition-transform duration-300 text-gold flex items-center justify-center bg-white/10 p-2 rounded-full group-hover:bg-gold group-hover:text-navy">
+              <ArrowRight size={20} className="transition-transform" />
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    function DashboardCard({ dashboard, onNotification }) {
+      const isMaintenance = dashboard.status === "Em manutenção";
+      const hasNoLink = !dashboard.url || dashboard.url === "#";
+
+      const handleClick = (e) => {
+        if (isMaintenance) {
+          e.preventDefault();
+          onNotification("Este painel está em manutenção no momento.");
+        } else if (hasNoLink) {
+          e.preventDefault();
+          onNotification("Este painel ainda não possui um link associado na planilha.");
+        }
+      };
+
+      return (
+        <a 
+          href={isMaintenance || hasNoLink ? "#" : dashboard.url} 
+          target={isMaintenance || hasNoLink ? "_self" : "_blank"} 
+          rel="noopener noreferrer" 
+          onClick={handleClick}
+          className={`block bg-white rounded-2xl shadow-sm hover:shadow-xl border ${isMaintenance ? "border-orange-500/50" : "border-slate-200 hover:border-gold"} p-6 flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02] relative overflow-hidden group h-48 cursor-pointer`}
+        >
+          <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-500 ${isMaintenance ? "bg-orange-500" : "bg-navy group-hover:bg-gold"}`}></div>
+
+          <div className="flex justify-between items-start mb-4 relative z-10 min-h-[28px] pl-2">
+            <div className="flex-grow">
+               <h3 className="text-lg font-bold text-navy leading-tight tracking-tight group-hover:text-gold transition-colors line-clamp-3">
+                 {dashboard.title}
+               </h3>
+            </div>
+            {isMaintenance && (
+              <span className="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-orange-100 text-orange-600 flex-shrink-0 ml-3 border border-orange-200">
+                Manutenção
+              </span>
+            )}
+          </div>
+
+          <div className="mt-auto relative z-10 flex justify-between items-end pl-2">
+            <div className="flex flex-wrap gap-2">
+              {dashboard.tags?.map((tag, idx) => (
+                <span key={idx} className="bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide uppercase">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <span className={`transition-colors duration-300 ml-4 flex-shrink-0 ${isMaintenance ? "text-slate-400" : "text-navy group-hover:text-gold"}`}>
+              <ArrowRight size={24} className={!isMaintenance ? "group-hover:translate-x-1 transition-transform" : ""} />
+            </span>
+          </div>
+        </a>
+      );
+    }
+
+    function App() {
+      const [categories, setCategories] = useState([]);
+      const [links, setLinks] = useState([]);
+      
+      const [activeCategory, setActiveCategory] = useState(null);
+      
+      const [isLoading, setIsLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [toastMsg, setToastMsg] = useState(null);
+
+      const showToast = (msg) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(null), 4000);
+      };
+
+      useEffect(() => {
+        const fetchData = async () => {
+          setIsLoading(true);
+          setError(null);
+          try {
+            const API_URL = "https://script.google.com/macros/s/AKfycbx_k4XYcG6PdFEFlAv-F41SF1lX9iS77Vk3aMem0BSRN5CR0Gi9yweiuXL3GRu1vPSebA/exec";
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) throw new Error("Erro ao conectar com a fonte de dados.");
+            
+            const rawData = await response.json();
+            const rows = rawData.data || rawData;
+
+            if (!Array.isArray(rows) || rows.length === 0) {
+               throw new Error("Planilha vazia ou formato não reconhecido.");
+            }
+
+            const newCategories = [];
+            const newLinks = [];
+
+            if (Array.isArray(rows[0])) {
+              const headers = rows[0];
+              
+              headers.forEach((headerStr, colIndex) => {
+                const header = String(headerStr).trim();
+                if (!header) return;
+                
+                const catId = header.toLowerCase().replace(/[^a-z0-9]/g, "-");
+                newCategories.push({ id: catId, label: header, icon: LayoutDashboard });
+
+                for (let i = 1; i < rows.length; i++) {
+                  const cellValue = rows[i][colIndex];
+                  if (cellValue && String(cellValue).trim() !== "") {
+                    const cellText = String(cellValue).trim();
+                    let url = "#";
+                    let title = cellText;
+                    
+                    const urlMatch = cellText.match(/(https?:\/\/[^\s]+)/);
+                    if (urlMatch) {
+                      url = urlMatch[1];
+                      title = cellText.replace(urlMatch[1], "").replace(/^[\n-]+|[\n-]+$/g, "").trim();
+                    }
+
+                    const isMaint = cellText.toLowerCase().includes("[manutenção]");
+                    if (isMaint) title = title.replace(/\[manutenção\]/i, "").trim();
+
+                    newLinks.push({
+                      id: `link-${colIndex}-${i}`,
+                      title: title || "Painel Sem Nome",
+                      category: catId,
+                      url: url,
+                      tags: [header],
+                      status: isMaint ? "Em manutenção" : "Ativo"
+                    });
+                  }
+                }
+              });
+            } else {
+              throw new Error("O formato dos dados requer um Array de Arrays.");
+            }
+
+            setCategories(newCategories);
+            setLinks(newLinks);
+
+          } catch (err) {
+            console.error("Fetch Error:", err);
+            setError(err.message || "Falha desconhecida ao processar os painéis.");
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        fetchData();
+      }, []);
+
+      const filteredLinks = links.filter(l => l.category === activeCategory);
+      const activeCategoryObj = categories.find(c => c.id === activeCategory);
+      
+      const ActiveIcon = activeCategoryObj?.icon;
+
+      return (
+        <div className="flex flex-col min-h-screen bg-slate-50 font-sans">
+          <Header />
+          <main className="flex-grow p-6 md:p-10 w-full relative">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-10 pb-6 flex flex-col gap-4">
+                {activeCategory !== null && (
+                  <button 
+                    onClick={() => setActiveCategory(null)} 
+                    className="self-start flex items-center gap-2 text-slate-500 font-bold hover:text-navy transition-colors bg-white px-5 py-2.5 rounded-full border border-slate-200 shadow-sm hover:shadow-md group cursor-pointer"
+                  >
+                    <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    Voltar para o Menu Principal
+                  </button>
+                )}
+
+                <h2 className="text-3xl md:text-4xl font-black text-navy uppercase tracking-tighter flex items-center gap-3">
+                  {activeCategory === null ? (
+                    <>
+                      <LayoutDashboard className="text-gold" size={36} strokeWidth={2.5} />
+                      Divisões
+                    </>
+                  ) : (
+                    <>
+                       {ActiveIcon ? <ActiveIcon className="text-gold" size={36} strokeWidth={2.5} /> : null}
+                       {activeCategoryObj?.label || "Painéis"}
+                    </>
+                  )}
+                </h2>
+                
+                <p className="text-slate-600 text-base font-medium leading-relaxed max-w-3xl">
+                  {activeCategory === null 
+                    ? "Selecione a área desejada abaixo para acessar os respectivos observatórios e relatórios gerenciais."
+                    : `Visualizando todos os indicadores da área selecionada. Clique em um painel para abri-lo.`
+                  }
+                </p>
+              </div>
+
+              {error && (
+                <div className="mb-8 bg-red-50 text-red-700 p-5 rounded-xl flex items-start border border-red-200 shadow-sm">
+                  <AlertCircle size={24} className="mr-4 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-lg mb-1">Erro de Sincronização</h4>
+                    <p className="text-sm">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {isLoading ? (
+                <div className="flex flex-col justify-center items-center py-32 opacity-70">
+                  <RefreshCw className="animate-spin text-navy mb-4" size={48} strokeWidth={1.5} />
+                  <span className="text-navy font-bold text-lg">Carregando dados da nuvem...</span>
+                </div>
+              ) : (
+                <>
+                  {activeCategory === null ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20 animate-fadeIn">
+                      {categories.map((cat) => (
+                        <CategoryCard key={cat.id} category={cat} onClick={() => setActiveCategory(cat.id)} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="animate-fadeIn">
+                      {filteredLinks.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                          {filteredLinks.map((dashboard) => (
+                            <DashboardCard key={dashboard.id} dashboard={dashboard} onNotification={showToast} />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-16 text-center flex flex-col items-center mt-2">
+                          <BarChart3 size={64} className="text-slate-300 mb-6" strokeWidth={1} />
+                          <h3 className="text-2xl font-bold text-navy mb-3">Nenhum painel disponível</h3>
+                          <p className="text-slate-500 text-base max-w-md">Não há relatórios cadastrados para esta divisão no momento.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </main>
+
+          <footer className="bg-navy border-t border-navy py-4 px-6 flex items-center justify-center flex-shrink-0 relative z-30">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold to-white"></div>
+            <p className="text-[10px] sm:text-xs font-medium text-slate-300 text-center uppercase tracking-widest">
+              Secretaria Municipal da Casa Civil • Olímpia, SP
+            </p>
+          </footer>
+
+          <Toast message={toastMsg} onClose={() => setToastMsg(null)} />
+        </div>
+      );
+    }
+
+    const rootElement = document.getElementById("root");
+    const root = createRoot(rootElement);
+    root.render(<App />);
+  </script>
+</body>
+</html>
