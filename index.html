@@ -44,39 +44,26 @@
       from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeIn {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    .animate-fadeInFast {
-      animation: fadeIn 0.3s ease-out forwards;
-    }
+    .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+    .animate-fadeInFast { animation: fadeIn 0.3s ease-out forwards; }
   </style>
 
-  <!-- Import Maps para React e Lucide Icons -->
-  <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.300.0?deps=react@18.2.0"
-      }
-    }
-  </script>
-
-  <!-- Babel para transpilar JSX no navegador -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Bibliotecas Base (UMD) para rodar diretamente sem dependências de módulos ES -->
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/lucide-react@0.300.0/dist/umd/lucide-react.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
 </head>
 <body>
   <div id="root"></div>
 
   <!-- CÓDIGO FONTE PRINCIPAL -->
-  <script type="text/babel" data-type="module">
-    import React, { useState, useEffect } from "react";
-    import { createRoot } from "react-dom/client";
-    import { 
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { 
       LayoutDashboard, AlertCircle, RefreshCw, BarChart3, 
       ChevronLeft, ArrowRight, X 
-    } from "lucide-react";
+    } = lucideReact;
 
     function Toast({ message, onClose }) {
       if (!message) return null;
@@ -323,7 +310,7 @@
                     </>
                   ) : (
                     <>
-                       {ActiveIcon ? <ActiveIcon className="text-gold" size={36} strokeWidth={2.5} /> : null}
+                       {ActiveIcon && <ActiveIcon className="text-gold" size={36} strokeWidth={2.5} />}
                        {activeCategoryObj?.label || "Painéis"}
                     </>
                   )}
@@ -395,7 +382,7 @@
     }
 
     const rootElement = document.getElementById("root");
-    const root = createRoot(rootElement);
+    const root = ReactDOM.createRoot(rootElement);
     root.render(<App />);
   </script>
 </body>
