@@ -30,8 +30,8 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
     body { 
-      background-color: #f8fafc; /* slate-50 */
-      color: #1e293b; /* slate-800 */ 
+      background-color: #f8fafc;
+      color: #1e293b; 
     }
     
     /* Custom Scrollbar */
@@ -44,26 +44,35 @@
       from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
-    .animate-fadeInFast { animation: fadeIn 0.3s ease-out forwards; }
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    .animate-fadeInFast {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
   </style>
 
-  <!-- Bibliotecas Base (UMD) para rodar diretamente sem dependências de módulos ES -->
-  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/lucide-react@0.300.0/dist/umd/lucide-react.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
+  <!-- Bibliotecas Base: React, ReactDOM e Babel (para standalone) -->
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
   <div id="root"></div>
 
   <!-- CÓDIGO FONTE PRINCIPAL -->
   <script type="text/babel">
+    // Sem 'imports'! Chamando diretamente das variáveis globais injetadas pelo CDN.
     const { useState, useEffect } = React;
-    const { 
-      LayoutDashboard, AlertCircle, RefreshCw, BarChart3, 
-      ChevronLeft, ArrowRight, X 
-    } = lucideReact;
+
+    // Ícones In-line (Substitutos offline-safe para Lucide)
+    const LayoutDashboard = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>;
+    const AlertCircle = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+    const RefreshCw = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
+    const BarChart3 = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v18h18"></path><rect x="7" y="13" width="4" height="4" rx="1"></rect><rect x="15" y="5" width="4" height="12" rx="1"></rect></svg>;
+    const ChevronLeft = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 18 9 12 15 6"></polyline></svg>;
+    const ArrowRight = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+    const X = ({ size = 24, className = '', strokeWidth = 2 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
     function Toast({ message, onClose }) {
       if (!message) return null;
@@ -194,9 +203,7 @@
     function App() {
       const [categories, setCategories] = useState([]);
       const [links, setLinks] = useState([]);
-      
       const [activeCategory, setActiveCategory] = useState(null);
-      
       const [isLoading, setIsLoading] = useState(true);
       const [error, setError] = useState(null);
       const [toastMsg, setToastMsg] = useState(null);
@@ -310,7 +317,7 @@
                     </>
                   ) : (
                     <>
-                       {ActiveIcon && <ActiveIcon className="text-gold" size={36} strokeWidth={2.5} />}
+                       {ActiveIcon ? <ActiveIcon className="text-gold" size={36} strokeWidth={2.5} /> : null}
                        {activeCategoryObj?.label || "Painéis"}
                     </>
                   )}
@@ -381,6 +388,7 @@
       );
     }
 
+    // Inicialização direta acessando root pelo ReactDOM da CDN
     const rootElement = document.getElementById("root");
     const root = ReactDOM.createRoot(rootElement);
     root.render(<App />);
