@@ -57,21 +57,31 @@
 
     // --- Componentes ---
     function Header() {
-      return e('header', { className: "bg-navy border-b border-navy h-24 flex items-center justify-between px-6 lg:px-10 z-30 shadow-sm relative" },
-        e('div', { className: "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold to-white" }),
-        e('div', { className: "flex flex-col justify-center" },
-          e('h1', { className: "text-xl font-black text-white uppercase tracking-tight" }, "Painel Integrado"),
-          e('p', { className: "text-xs font-bold text-slate-300 uppercase tracking-widest hidden sm:block" }, "Secretaria Municipal da Casa Civil")
+      return e('header', { className: "bg-navy border-b border-navy h-24 flex items-center px-6 lg:px-10 z-30 shadow-sm relative overflow-hidden" },
+        // Barra dourada superior
+        e('div', { className: "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold to-white z-20" }),
+        
+        // Área esquerda (Textos)
+        e('div', { className: "flex-1 flex flex-col justify-center z-10" },
+          e('h1', { className: "text-lg md:text-xl font-black text-white uppercase tracking-tight" }, "Painel Integrado"),
+          e('p', { className: "text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest hidden sm:block" }, "Secretaria Municipal da Casa Civil")
         ),
-        e('div', { className: "h-16 bg-white rounded-lg shadow-sm border border-slate-100 p-1 flex items-center justify-center" },
+        
+        // Área central (Logo absoluta para garantir o centro exato)
+        e('div', { className: "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-16 bg-white rounded-lg shadow-sm border border-slate-100 p-1.5 flex items-center justify-center z-20" },
           e('img', { src: "https://e-licita.olimpia.sp.gov.br:8096/img/logo.png", alt: "Brasão", className: "h-full w-auto object-contain" })
+        ),
+        
+        // Área direita (Espaçador/Botão Ano para equilibrar o layout)
+        e('div', { className: "flex-1 flex justify-end z-10" },
+          e('span', { className: "bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest hidden md:block" }, "Ano 2026")
         )
       );
     }
 
     function Footer() {
       return e('footer', { className: "bg-navy border-t-[3px] border-gold py-5 px-6 mt-12 text-center" },
-        e('p', { className: "text-white text-xs font-bold uppercase tracking-widest" }, "SECRETARIA MUNICIPAL DA CASA CIVIL • OLÍMPIA, SP")
+        e('p', { className: "text-white text-[10px] md:text-xs font-bold uppercase tracking-widest" }, "SECRETARIA MUNICIPAL DA CASA CIVIL • OLÍMPIA, SP")
       );
     }
 
